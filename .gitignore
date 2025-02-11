@@ -1,0 +1,11 @@
+.vscode
+
+# python temporary files 
+__pycache__/
+*.py[cod]
+*$py.class
+baseline/drivefuzz_apollo/seed*
+command_execution_log.txt
+auto_run_bl.sh
+command_execution_log_bl.txt
+run_carla_baseline.sh

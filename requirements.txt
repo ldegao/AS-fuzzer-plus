@@ -1,0 +1,9 @@
+pygame
+deap
+websocket-client
+packaging
+imageio 
+imageio-ffmpeg==0.4.2
+importlib_resources
+plotly
+kaleido
