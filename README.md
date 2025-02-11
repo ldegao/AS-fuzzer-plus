@@ -1,35 +1,74 @@
+# AS-Fuzzer++
 
-## Overview
-AS-Fuzzer aims to efficiently generate numerous critical scenarios for complex road structures to uncover ADS defects. The core of AS-Fuzzer is a Genetic Algorithm (GA) that generates scenarios with random but effective traffic participants, evolving the best individuals to search for critical scenarios. The workflow is as follows:
-![overview](doc/overview.png)
-1. AS-Fuzzer maintains a Genetic Algorithm Library (GA-Lib) containing the smallest atomic scenarios of large composite scenarios and their corresponding GAs. Each atomic scenario evolves independently, placing parameterized local scenarios requiring simulation and fitness scores into validation lists.
-2. The Local Scenario Selector defines the road facilities during ADS operation, retrieving a
-corresponding parameterized local scenario from the GA Lib's validation list, submitting it to the Scenario Executor for simulation, and returning the fitness scores to the Evaluation List for iterative GA cycles.
-3. The Simulation Executor serves as a communication bridge between the ADS and the simulator, initializing the ADS and providing destination information. During simulation, it collects ADS route planning outputs, divides the large scenario into local scenarios based on the planned route, and sends local scenario features to the Local Scenario Selector. The Scenario Loader then instantiates and runs the parameterized local scenario in the simulator.
-4. After simulating each local scenario, it is evaluated to obtain fitness scores. The Unsafe Behavior Monitor detects collisions or minor violations, recording and reporting errors.
+AS-Fuzzer++ is an advanced fuzzing framework designed to **efficiently generate critical test scenarios** for **Autonomous Driving Systems (ADS)** in **complex road environments**. It extends the capabilities of **AS-Fuzzer** by incorporating **scenario segmentation, co-evolutionary genetic algorithms (CEGA), dynamic obstruction handling, and congestion-aware vehicle rerouting**, significantly improving **testing efficiency, scenario diversity, and defect detection rates**.
 
+---
 
-## Usage
-### Before you start
-Nvidia Docker is required before you start. Please refer to the official website for installation instructions.
+## **Overview**
+AS-Fuzzer++ introduces several key enhancements over AS-Fuzzer:
 
-Carla 0.9.14 should be installed also.
+- **Scenario Segmentation & Parallel Execution**:  
+  - Large-scale scenarios are **divided into atomic sub-scenarios**, enabling **parallel processing** and **higher interaction rates**.
+  - Supports **more diverse and critical test cases** while maintaining computational efficiency.
 
-```bash
-docker pull carlasim/carla:0.9.14
-```
+- **Co-evolutionary Genetic Algorithm (CEGA) for Optimized Scenario Generation**:  
+  - Introduces **co-evolutionary mechanisms** to **generate diverse, high-risk scenarios**.
+  - Enhances **interaction rates** and **exposes critical ADS failures** more effectively.
 
-Carla Apollo Bridge is required.
-Please refer to the [insallation guide](https://github.com/guardstrikelab/carla_apollo_bridge/blob/master/docs/GettingStarted.md).
+- **Block Solver Mechanism**:  
+  - Dynamically **resolves stuck scenarios** where ADS vehicles are blocked due to external factors.
+  - Ensures **uninterrupted testing cycles**, reducing failed test cases.
 
-We have slightly customized the original [carla_apollo_bridge repository](https://github.com/guardstrikelab/carla_apollo_bridge/), mainly introducing remote control scripts for Apollo, so please use our fork version. So, when you are cloning the carla_apollo_bridge project outside Apollo container, please clone the fork version by:
+- **Congestion-aware Vehicle Rerouting**:  
+  - Adjusts **traffic participant behaviors dynamically**, ensuring that NPC vehicles **engage meaningfully** with the ADS.
+  - **Prevents low-interaction scenarios** and increases **realism in urban congestion testing**.
+
+---
+
+### **Workflow**
+![overview](doc/overview.pdf)
+
+1. **Genetic Algorithm Library (GA-Lib)**:  
+   - Maintains **atomic test scenarios** derived from **large composite scenarios**.
+   - Each scenario evolves **independently**, generating **parameterized local test cases** that require simulation and evaluation.
+
+2. **Local Scenario Selector**:  
+   - Defines **critical road facilities** for **ADS operation**.  
+   - Dynamically **retrieves scenarios from GA-Lib**, sending them to the **Scenario Executor** for simulation and fitness evaluation.
+
+3. **Simulation Executor**:  
+   - **Facilitates communication between the ADS and simulator**.  
+   - Initializes **ADS test cases**, collects route-planning outputs, **segments large scenarios into localized test cases**, and **sends scenario features** to the Local Scenario Selector.
+
+4. **Block Solver Mechanism**:  
+   - **Detects and resolves ADS blockages** caused by environmental factors.  
+   - Ensures that **testing continues seamlessly** without unnecessary failures.
+
+5. **Unsafe Behavior Monitor & Evaluation**:  
+   - Detects **collisions, unsafe behaviors, or minor violations**.  
+   - Logs **critical ADS failures** and **feeds evaluation results back into the GA pipeline** for scenario optimization.
+
+---
+
+## **Usage**
+### **1. Before You Start**
+Ensure the following dependencies are installed:
+
+- **Nvidia Docker** (for GPU acceleration) ? [Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+- **Carla 0.9.14** (Simulation Environment)
+- **Carla Apollo Bridge** (for ADS-Testing)  
+  Follow the official installation guide: [Carla Apollo Bridge](https://github.com/guardstrikelab/carla_apollo_bridge/blob/master/docs/GettingStarted.md).
+
+We have **customized the original `carla_apollo_bridge` repository** with **remote control scripts for Apollo**.  
+**Please use our forked version**:
+
 ```bash
 # Using SSH
 git clone git@github.com:cfs4819/carla_apollo_bridge.git
 
-#Using HTTPS
+# Using HTTPS
 git clone https://github.com/cfs4819/carla_apollo_bridge.git
-```
+
 
 ### 2. Clone this repository and install dependencies
 ```bash
@@ -50,17 +89,28 @@ cd /apollo/modules/as_fuzz & pip install -r requirement.txt
 ```bash
 # inside apollo container
 cd /apollo/modules/as_fuzz
-python asfuzz.py
+python asfuzzpp.py
 ```
 
 
-## Experiment Results
-Our experiments found 37 defects in Apollo, which we describe in the ['_Some key scenarios that can expose Apollo vulnerabilities generated by AS-Fuzz and baselines_'](doc/key_scenarios.md).
+## **Experiment Results**
+AS-Fuzzer++ was evaluated in **Apollo 8.0** within the **Carla simulator**, demonstrating **substantial improvements** over AS-Fuzzer.  
+Key findings include:
 
-## Cite Our Work
+- **Identified 49 unique ADS failure cases**, including **37 previously undetected vulnerabilities**.
+- **Test scenario generation efficiency improved by 25.8%**.
+- **Interaction rates increased by 1.58×**, ensuring **higher realism in testing**.
+- **Blocked scenario occurrences reduced by 32%**, leading to **more effective simulations**.
 
-If you use this code in your research, please cite our paper:
-```
+For details on **specific test cases**, see:  
+[Key Scenarios Exposing Apollo Vulnerabilities](doc/key_scenarios.md).
+
+---
+
+## **Cite Our Work**
+If you use AS-Fuzzer++ in your research, please cite our paper:
+
+```bibtex
 @inproceedings{
 }
-```
+
