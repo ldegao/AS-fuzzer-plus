@@ -26,7 +26,7 @@ AS-Fuzzer++ introduces several key enhancements over AS-Fuzzer:
 ---
 
 ### **Workflow**
-![overview](doc/overview.pdf)
+![overview](doc/overview.jpg)
 
 1. **Genetic Algorithm Library (GA-Lib)**:  
    - Maintains **atomic test scenarios** derived from **large composite scenarios**.
